@@ -30,7 +30,8 @@
             </div>
             <div class="form-group">
                 <label for="input-bold">Введите толщину матраса:</label>
-                <input type="number" id="input-bold" class="form-control" required>
+                <input type="range" id="input-bold" class="form-control" min="50" max="500" step="50" value="50">
+                <output id="input-bold-output">50</output>
             </div>
             <div class="form-group">
                 <label for="input-amount">Введите количество изделий:</label>
@@ -46,11 +47,16 @@
         <h2>Список матрасов</h2>
         <div id="mattress-list"></div>
         <button type="button" onclick="calculate()" class="btn">Рассчитать</button>
+        <button type="button" onclick="visualize()" class="btn" id="visualize-button" disabled>Визуализировать</button>
         <h2>Результаты</h2>
         <div id="results">
             <p id="total-height"></p>
             <p id="details-list"></p>
             <p id="total-details"></p>
+        </div>
+        <div id="visualization">
+            <h2>Визуализация</h2>
+            <canvas id="canvas"></canvas>
         </div>
     </div>
     <script src="script.js"></script>
