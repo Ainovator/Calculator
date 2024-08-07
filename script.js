@@ -120,8 +120,49 @@ function calculate() {
     const inputTextile = mattressList.length > 0 ? mattressList[0].inputTextile : 0;
     const totalHeight = bestFit(inputTextile, details);
     document.getElementById('total-height').textContent = `Необходимая длина рулона: ${totalHeight.totalHeight}`;
-    document.getElementById('details-list').textContent = `Детали: ${JSON.stringify(details)}`;
+    
+    const detailsFormatted = details.map(d => `${d[0]}*${d[1]}`).join(', ');
+    document.getElementById('details-list').textContent = `Детали: ${detailsFormatted}`;
+    
     document.getElementById('total-details').textContent = `Общее количество деталей: ${details.length}`;
+
+    document.getElementById('visualize-button').disabled = false;
+}
+
+function visualize() {
+    const inputTextile = mattressList.length > 0 ? mattressList[0].inputTextile : 0;
+    const { detailPositions } = bestFit(inputTextile, details);
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = inputTextile;
+    canvas.height = detailPositions.reduce((max, pos) => Math.max(max, pos[1] + pos[3]), 0);
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const gridSize = 10;
+
+    // Рисуем координатную сетку
+    ctx.strokeStyle = '#ddd';
+    for (let x = 0; x <= canvas.width; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+    }
+    for (let y = 0; y <= canvas.height; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+    }
+
+    // Рисуем детали
+    ctx.strokeStyle = '#007bff';
+    ctx.lineWidth = 2;
+    detailPositions.forEach(([x, y, width, height]) => {
+        ctx.strokeRect(x, y, width, height);
+        ctx.fillText(`${width}x${height}`, x + 5, y + 15);
+    });
 }
 
 function checkFormCompletion() {
@@ -137,7 +178,10 @@ function checkFormCompletion() {
 
 document.getElementById('input-width').addEventListener('input', checkFormCompletion);
 document.getElementById('input-length').addEventListener('input', checkFormCompletion);
-document.getElementById('input-bold').addEventListener('input', checkFormCompletion);
+document.getElementById('input-bold').addEventListener('input', (event) => {
+    document.getElementById('input-bold-output').value = event.target.value;
+    checkFormCompletion();
+});
 document.getElementById('input-amount').addEventListener('input', checkFormCompletion);
 document.getElementById('input-textile').addEventListener('input', (event) => {
     document.getElementById('input-textile-output').value = event.target.value;
